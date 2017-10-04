@@ -2,6 +2,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Scanner;
 
@@ -32,7 +33,7 @@ class Derivative {
         }
         pw.close();
 
-        out.println("Please enter a function press enter for y=x : ");
+        out.print("Please enter a function press enter for y=x (for cubed root write (x^(1/3)) ect) : ");
             String function = in.nextLine();
         out.print("Start value for function: ");
             start = in.nextDouble();
@@ -109,12 +110,14 @@ class Derivative {
      *
      */
     private static String functionStr(String function, double x){
+        DecimalFormat df1 = new DecimalFormat("0.########");
         double index = 0, base = 0, power = 0, base1, power1;
-        boolean powerFound;
+        boolean powerFound, parFound = false, neg = false;
         function = function.replace("f(x)", "");
         function = function.replace("y=","");
         function = function.replace("X", Double.toString(x));
         function = function.replace("x", Double.toString(x));
+        //detects the base and power
         for(int i = 0; i < function.length(); i++){
             powerFound = false;
             if(function.charAt(i) == '^'){
@@ -133,47 +136,95 @@ class Derivative {
                 for(int k = i+1; k < function.length();k++){
                     if(Character.isDigit(function.charAt(k)) || function.charAt(k) == '.'){
                         power = k+1;
+                    }else if(function.charAt(k) == '('){
+                        parFound = true;
+                        for(int l = k+2; k < function.length(); k++){
+                            if(Character.isDigit(function.charAt(l)) || function.charAt(l) == '.' || function.charAt(l) == '-' || function.charAt(l) == '+' || function.charAt(l) == '*' || function.charAt(l) == '/' ) {
+                                power = l + 2;
+                            }else{
+                                break;
+                            }
+                        }
+                        break;
                     }else{
                         break;
                     }
                 }
             }
+            //detects sine
             if(function.charAt(i) == 's' && function.charAt(i+1) == 'i'){
                 for(int j = i; j < function.length(); j++ ){
                     if(function.charAt(j) == ')'){
                         //System.out.println(Double.toString(Math.sin(Double.parseDouble(function.substring(i+4,j)))) + "SIN VALUE");
-                        function = function.replace(function.substring(i,j+1),Double.toString(Math.sin(Double.parseDouble(function.substring(i+4,j)))));
+                        BigDecimal bd = new BigDecimal(df1.format(Math.sin(Double.parseDouble(Eval(function.substring(i+4,j))))));
+                        String math = bd.toString();
+                        //math = Double.parseDouble(df1.format(math));
+                        //System.out.println(math + " SIN " + " " +function);
+                        function = function.replace(function.substring(i,j+1),math);
+                        //System.out.println(math + " FUNCTION ");
                         break;
                     }
                 }
             }
+            //detects cosine
             if(function.charAt(i) == 'c' && function.charAt(i+1) == 'o'){
                 for(int j = i; j < function.length(); j++ ){
                     if(function.charAt(j) == ')'){
                         //System.out.println(j + " " +Double.toString(Math.cos(Double.parseDouble(function.substring(i+4,j)))) + "COS VALUE");
-                        function = function.replace(function.substring(i,j+1),Double.toString(Math.cos(Double.parseDouble(function.substring(i+4,j)))));
-
+                        BigDecimal bd = new BigDecimal(df1.format(Math.cos(Double.parseDouble(Eval(function.substring(i+4,j))))));
+                        String math = bd.toString();
+                        function = function.replace(function.substring(i,j+1),(math));
                         break;
                     }
                 }
             }
+            //detects sqrt
             if(function.charAt(i) == 's' && function.charAt(i+1) == 'q'){
                 for(int j = i; j < function.length(); j++ ){
                     if(function.charAt(j) == ')'){
                         //System.out.println(j + " " +Double.toString(Math.cos(Double.parseDouble(function.substring(i+4,j)))) + "COS VALUE");
                         //System.out.println((function.substring(i+5,j)));
                         //System.exit(0);
-                        function = function.replace(function.substring(i,j+1),Double.toString(Math.sqrt(Double.parseDouble(Eval(function.substring(i+5,j))))));
+                        BigDecimal bd = new BigDecimal(df1.format(Math.sqrt(Double.parseDouble(Eval(function.substring(i+4,j))))));
+                        String math = bd.toString();
+                        function = function.replace(function.substring(i,j+1),(math));
                         break;
                     }
                 }
             }
             if(powerFound){
+                DecimalFormat df = new DecimalFormat("0.########");
                 //System.out.println(function.substring((int)base,(int) index));
                 base1 = Double.parseDouble(function.substring((int)base,(int) index));
-                power1 = Double.parseDouble(function.substring((int)index+1,(int)power));
-                double math = Math.pow(base1,power1);
-                function = function.replace(function.substring((int)base,(int)power), Double.toString(math));
+                if(parFound){
+                    power1 = Double.parseDouble(Eval(function.substring((int)index+2,(int)power)));
+                    if(base1 < 0){
+                        base1 = Math.abs(base1);
+                        neg = true;
+                    }
+                    double math = Math.pow((base1), power1);
+                    math = Double.parseDouble(df.format(math));
+                    if(neg){
+                        math *= -1;
+                    }
+                    math = Double.parseDouble(df.format(math));
+
+                    function = function.replace(function.substring((int)base,(int)power+1), (Double.toString(math)));
+                    try{
+                        function = df.format(Double.parseDouble(function));
+                    }catch (Exception ex){
+                        System.out.println(math);
+                        System.out.println(function);
+                        System.exit(0);
+                    }
+
+
+                }else{
+                    power1 = Double.parseDouble(function.substring((int)index+1,(int)power));
+                    double math = Math.pow(base1,power1);
+                    function = function.replace(function.substring((int)base,(int)power), (Double.toString(math)));
+                }
+
             }
         }
         return function;
@@ -200,7 +251,7 @@ class Derivative {
             result = evaluate.eval(function1);
         } catch (ScriptException e) {
             System.out.println("Function not valid please ensure equation is correct " +
-                    "\n Ex: 2-(-x) != 2--x ; 2x^3+3/4 != ((2x^3)+3)/4");
+                    "\n Ex: 2-(-x) != 2--x ; 2x^3+3/4 != ((2x^3)+3)/4" + " " + function1);
             System.exit(0);
         }
         return result.toString();
@@ -215,6 +266,7 @@ class Derivative {
         } catch (ScriptException e) {
             e.printStackTrace();
         }
+        assert result != null;
         return result.toString();
     }
 
