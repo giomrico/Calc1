@@ -261,7 +261,7 @@ class Derivative {
             System.exit(0);
 
         }
-        assert result != null;
+        assert result != null : "result of Eval is null";
         return result.toString();
     }
 
