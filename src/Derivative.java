@@ -62,7 +62,7 @@ class Derivative {
     private static void slope(double start, double stop, String function, String fileOut) throws ScriptException {
         int i = 0;
         double deltaX = (stop - start) / 1000;
-        DecimalFormat format = new DecimalFormat("0.####");
+        DecimalFormat format = new DecimalFormat("0.00000000");
         while (start <= stop) {
             double y = Double.parseDouble((Function(start + deltaX, function))) - Double.parseDouble((Function(start, function)));
             String func = Function(start, function);
@@ -72,8 +72,8 @@ class Derivative {
 
             try (PrintWriter fOut = new PrintWriter(new BufferedWriter(new FileWriter(fileOut, true)))) {
                 if (i == 0) {
-                    System.out.println("x" + "              " + "f(x)" + "              " + "f'(x)");
-                    fOut.println("x" + "                    " + "f(x)" + "              " + "f'(x)");
+                    System.out.println("x" + "                      " + "f(x)" + "                   " + "f'(x)");
+                    fOut.println("x" + "                      " + "f(x)" + "                   " + "f'(x)");
                     i = 1;
                 } else {
                     fOut.println(s);
@@ -186,7 +186,7 @@ class Derivative {
             if (powerFound) {
                 DecimalFormat df = new DecimalFormat("0.00000000");
                 //System.out.println(function.substring((int)base,(int) index));
-                base1 = Double.parseDouble(function.substring((int) base, (int) index));
+                base1 = Double.parseDouble(function.substring((int) base, (int) index).replace("(","").replace(")","") );
                 if (parFound) {
                     power1 = Double.parseDouble(Eval(function.substring((int) index + 2, (int) power)));
                     if (base1 < 0) {
@@ -213,7 +213,7 @@ class Derivative {
                 } else {
                     power1 = Double.parseDouble(function.substring((int) index + 1, (int) power));
                     double math = Math.pow(base1, power1);
-                    System.out.println(power1 + " " + base1 + " HERE");
+                    //System.out.println(power1 + " " + base1 + " HERE");
                     function = function.replace(function.substring((int) base, (int) power), (Double.toString(math)));
                 }
 
@@ -243,6 +243,7 @@ class Derivative {
                     "\n Ex: 2-(-x) != 2--x ; 2x^3+3/4 != ((2x^3)+3)/4" + " " + function1);
             System.exit(0);
         }
+        //System.out.println(df.format(Double.parseDouble(result.toString())) + " HERE");
         return result.toString();
 
     }
