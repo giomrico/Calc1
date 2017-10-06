@@ -115,7 +115,7 @@ class Derivative {
         }
         function = function.replace("f(x)", "");
         function = function.replace("y=", "");
-        function = function.replace("X", Double.toString(x));
+        function = function.replace("X", Double.toString(x)).trim();
         function = function.replace("x", Double.toString(x));
         //detects the base and power
         for (int i = 0; i < function.length(); i++) {
@@ -124,7 +124,7 @@ class Derivative {
                 powerFound = true;
                 index = i;
                 for (int j = i - 1; j >= 0; j--) {
-                    if (Character.isDigit(function.charAt(j)) || function.charAt(j) == '.') {
+                    if (function.charAt(j) != '+' || function.charAt(j) != '*' || function.charAt(j) != '/') {
                         base = j;
                     } else if (function.charAt(j) == '-') {
                         base = j;
@@ -198,7 +198,7 @@ class Derivative {
             if (powerFound) {
                 DecimalFormat df = new DecimalFormat("0.00000000");
                 //System.out.println(function.substring((int)base,(int) index));
-                base1 = Double.parseDouble(function.substring((int) base, (int) index).replace("(","").replace(")","") );
+                base1 = Double.parseDouble(functionStr(function.substring((int) base, (int) index).replace("(","").replace(")",""),x));
                 if (parFound) {
                     //System.out.println(power);
                     //System.out.println(function.substring((int) index + 2, (int) power));
@@ -219,7 +219,7 @@ class Derivative {
                         function = function.replace("(","").replace(")","");
                         function = df.format(Double.parseDouble(function));
                     } catch (Exception ex) {
-                        System.out.println( base1 + " " + power1);
+                        System.out.println( base1 + " " + power1 + " " + x);
                         System.out.println(math);
                         System.out.println(function + " " + function.substring((int) base, (int) power-1));
                         System.exit(104);
