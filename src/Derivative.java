@@ -63,7 +63,9 @@ class Derivative {
         int i = 0;
         double deltaX = (stop - start) / 1000;
         DecimalFormat format = new DecimalFormat("0.00000000");
+
         while (start <= stop) {
+            //.println(Function(start + deltaX, function) + " " + Function(start, function));
             double y = Double.parseDouble((Function(start + deltaX, function))) - Double.parseDouble((Function(start, function)));
             String func = Function(start, function);
 
@@ -72,8 +74,8 @@ class Derivative {
 
             try (PrintWriter fOut = new PrintWriter(new BufferedWriter(new FileWriter(fileOut, true)))) {
                 if (i == 0) {
-                    System.out.println("x" + "                      " + "f(x)" + "                    " + "f'(x)");
-                    fOut.println("x" + "                      " + "f(x)" + "                    " + "f'(x)");
+                    System.out.println("x" + "                       " + "f(x)" + "                    " + "f'(x)");
+                    fOut.println("x" + "                       " + "f(x)" + "                    " + "f'(x)");
                     i = 1;
                 } else {
                     fOut.println(s);
@@ -115,8 +117,9 @@ class Derivative {
         }
         function = function.replace("f(x)", "");
         function = function.replace("y=", "");
-        function = function.replace("X", Double.toString(x)).trim();
+        function = function.replace("X", Double.toString(x));
         function = function.replace("x", Double.toString(x));
+        function = function.replace("*-", " * -");
         //detects the base and power
         for (int i = 0; i < function.length(); i++) {
             powerFound = false;
@@ -134,7 +137,8 @@ class Derivative {
                     }
                 }
                 for (int k = i + 1; k < function.length(); k++) {
-                    if (Character.isDigit(function.charAt(k)) || function.charAt(k) == '.') {
+                    //System.out.println(function.charAt(k));
+                    if (Character.isDigit(function.charAt(k)) || function.charAt(k) == '.' || function.charAt(k) == '-') {
                         power = k + 1;
                     } else if (function.charAt(k) == '(') {
                         parFound = true;
@@ -194,11 +198,14 @@ class Derivative {
                         break;
                     }
                 }
+
             }
             if (powerFound) {
                 DecimalFormat df = new DecimalFormat("0.00000000");
                 //System.out.println(function.substring((int)base,(int) index));
-                base1 = Double.parseDouble(functionStr(function.substring((int) base, (int) index).replace("(","").replace(")",""),x));
+                //System.out.println((function.substring((int) base, (int) index)).replace("-"," -") + " BASE");
+                //System.out.println(functionStr(function.substring((int) index + 2, (int) power).replace("-"," -"),x));
+                base1 = Double.parseDouble(Eval(functionStr(function.substring((int) base, (int) index),x)));
                 if (parFound) {
                     //System.out.println(power);
                     //System.out.println(function.substring((int) index + 2, (int) power));
@@ -212,11 +219,14 @@ class Derivative {
                     math = Double.parseDouble(df.format(math));
                     if (neg) {
                         math *= -1;
+                        function = function.replace(function.substring((int) base, (int) power+1), Double.toString(0));
+                    }else{
+                        function = function.replace(function.substring((int) base, (int) power+1), (Double.toString(math)));
                     }
-                    math = Double.parseDouble(df.format(math));
-                    function = function.replace(function.substring((int) base, (int) power+1), (Double.toString(math)));
+
                     try {
                         function = function.replace("(","").replace(")","");
+                        //System.out.println(base1 + " " + power1 + ' ' + math + "BASE AND POWER");
                         function = df.format(Double.parseDouble(function));
                     } catch (Exception ex) {
                         System.out.println( base1 + " " + power1 + " " + x);
@@ -227,10 +237,12 @@ class Derivative {
 
 
                 } else {
+                    //System.out.println(index + " " + power);
                     power1 = Double.parseDouble(function.substring((int) index + 1, (int) power));
                     double math = Math.pow(base1, power1);
-                    //System.out.println(base1 + " " + power1 + ' ' + math + "BASE AND POWER");
-                    function = function.replace(function.substring((int) base, (int) power), (Double.toString(math)));
+
+                    function = function.replace(function.substring((int) base, (int) power), "(" +(Double.toString(math))+ ")");
+                    //System.out.println(function);
                 }
 
             }
