@@ -146,7 +146,7 @@ class Derivative {
                             }else if(l+1 == function.length()){
                                 System.out.println("User Error: Forgot parentheses \")\" ");
                                 System.exit(106);
-                        }
+                            }
                         }
                         break;
                     } else {
@@ -203,7 +203,7 @@ class Derivative {
                     //System.out.println(power);
                     //System.out.println(function.substring((int) index + 2, (int) power));
                     //System.out.println(power);
-                    power1 = Double.parseDouble(Eval(function.substring((int) index + 2, (int) power)));
+                    power1 = Double.parseDouble(Eval(functionStr(function.substring((int) index + 2, (int) power),x)));
                     if (base1 < 0) {
                         base1 = Math.abs(base1);
                         neg = true;
