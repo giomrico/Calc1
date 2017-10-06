@@ -229,7 +229,6 @@ class Derivative {
                 } else {
                     power1 = Double.parseDouble(function.substring((int) index + 1, (int) power));
                     double math = Math.pow(base1, power1);
-                    //System.out.println(power1 + " " + base1 + " HERE");
                     //System.out.println(base1 + " " + power1 + ' ' + math + "BASE AND POWER");
                     function = function.replace(function.substring((int) base, (int) power), (Double.toString(math)));
                 }
