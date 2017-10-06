@@ -138,7 +138,6 @@ class Derivative {
                         power = k + 1;
                     } else if (function.charAt(k) == '(') {
                         parFound = true;
-                        //System.out.println("HERE");
                         for (int l = k; l < function.length(); l++) {
                             //Character.isDigit(function.charAt(l)) || function.charAt(l) == '.' || function.charAt(l) == '-' || function.charAt(l) == '+' || function.charAt(l) == '*' || function.charAt(l) == '/'
                             if (function.charAt(l) == ')') {
