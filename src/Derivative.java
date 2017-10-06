@@ -72,11 +72,12 @@ class Derivative {
 
             try (PrintWriter fOut = new PrintWriter(new BufferedWriter(new FileWriter(fileOut, true)))) {
                 if (i == 0) {
-                    System.out.println("x" + "                      " + "f(x)" + "                   " + "f'(x)");
-                    fOut.println("x" + "                      " + "f(x)" + "                   " + "f'(x)");
+                    System.out.println("x" + "                      " + "f(x)" + "                    " + "f'(x)");
+                    fOut.println("x" + "                      " + "f(x)" + "                    " + "f'(x)");
                     i = 1;
                 } else {
                     fOut.println(s);
+                    //System.out.println(" Y= " + y + " DeltaX= " + deltaX + " " + Function(start + deltaX, function) + " " + Function(start, function));
                     System.out.println(s);
                 }
             } catch (Exception ex) {
@@ -104,6 +105,14 @@ class Derivative {
         DecimalFormat df1 = new DecimalFormat("0.00000000");
         double index = 0, base = 0, power = 0, base1, power1;
         boolean powerFound, parFound = false, neg = false;
+        StringBuilder functionBuilder = new StringBuilder();
+        functionBuilder.append(function);
+        for(int i = 0; i < function.length()-1; i++) {
+            if (Character.isDigit(function.charAt(i)) && function.toLowerCase().charAt(i + 1) == 'x') {
+                function = String.valueOf(functionBuilder.insert(i + 1, "*"));
+                //System.out.println(function);
+            }
+        }
         function = function.replace("f(x)", "");
         function = function.replace("y=", "");
         function = function.replace("X", Double.toString(x));
@@ -214,6 +223,7 @@ class Derivative {
                     power1 = Double.parseDouble(function.substring((int) index + 1, (int) power));
                     double math = Math.pow(base1, power1);
                     //System.out.println(power1 + " " + base1 + " HERE");
+                    //System.out.println(base1 + " " + power1 + ' ' + math + "BASE AND POWER");
                     function = function.replace(function.substring((int) base, (int) power), (Double.toString(math)));
                 }
 
@@ -237,6 +247,7 @@ class Derivative {
         ScriptEngine evaluate = evalFunction.getEngineByName("js");
         Object result = null;
         try {
+            //System.out.println(function1 + "FUNCTION");
             result = evaluate.eval(function1);
         } catch (ScriptException e) {
             System.out.println("Function not valid please ensure equation is correct " +
@@ -247,7 +258,7 @@ class Derivative {
         return result.toString();
 
     }
-
+    //TODO Test all different functions
     private static String Eval(String function) {
         ScriptEngineManager evalFunction = new ScriptEngineManager();
         ScriptEngine evaluate = evalFunction.getEngineByName("js");
