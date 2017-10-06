@@ -143,7 +143,10 @@ class Derivative {
                             if (function.charAt(l) == ')') {
                                 power = l;
                                 //System.out.println(power + " POWER");
-                            }
+                            }else if(l+1 == function.length()){
+                                System.out.println("User Error: Forgot parentheses \")\" ");
+                                System.exit(106);
+                        }
                         }
                         break;
                     } else {
