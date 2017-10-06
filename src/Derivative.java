@@ -26,7 +26,7 @@ class Derivative {
             pw.close();
         } catch (FileNotFoundException e) {
             System.out.println("Output file not available");
-            System.exit(0);
+            System.exit(100);
         }
         pw.close();
 
@@ -43,7 +43,7 @@ class Derivative {
         }
         if ((stop - start) <= 0) {
             System.out.println("Start and Stop values not correct retry");
-            System.exit(0);
+            System.exit(101);
         }
         //Calls slope to print x , f(x) , f'(x)
         slope(start, stop, function, fileOut);
@@ -82,7 +82,7 @@ class Derivative {
                 }
             } catch (Exception ex) {
                 System.out.println("Error printing out");
-                System.exit(0);
+                System.exit(103);
             }
 
             start += deltaX;
@@ -138,11 +138,12 @@ class Derivative {
                         power = k + 1;
                     } else if (function.charAt(k) == '(') {
                         parFound = true;
-                        for (int l = k + 2; k < function.length(); k++) {
-                            if (Character.isDigit(function.charAt(l)) || function.charAt(l) == '.' || function.charAt(l) == '-' || function.charAt(l) == '+' || function.charAt(l) == '*' || function.charAt(l) == '/') {
-                                power = l + 2;
-                            } else {
-                                break;
+                        //System.out.println("HERE");
+                        for (int l = k; l < function.length(); l++) {
+                            //Character.isDigit(function.charAt(l)) || function.charAt(l) == '.' || function.charAt(l) == '-' || function.charAt(l) == '+' || function.charAt(l) == '*' || function.charAt(l) == '/'
+                            if (function.charAt(l) == ')') {
+                                power = l;
+                                //System.out.println(power + " POWER");
                             }
                         }
                         break;
@@ -197,6 +198,9 @@ class Derivative {
                 //System.out.println(function.substring((int)base,(int) index));
                 base1 = Double.parseDouble(function.substring((int) base, (int) index).replace("(","").replace(")","") );
                 if (parFound) {
+                    //System.out.println(power);
+                    //System.out.println(function.substring((int) index + 2, (int) power));
+                    //System.out.println(power);
                     power1 = Double.parseDouble(Eval(function.substring((int) index + 2, (int) power)));
                     if (base1 < 0) {
                         base1 = Math.abs(base1);
@@ -208,14 +212,15 @@ class Derivative {
                         math *= -1;
                     }
                     math = Double.parseDouble(df.format(math));
-
-                    function = function.replace(function.substring((int) base, (int) power + 1), (Double.toString(math)));
+                    function = function.replace(function.substring((int) base, (int) power+1), (Double.toString(math)));
                     try {
+                        function = function.replace("(","").replace(")","");
                         function = df.format(Double.parseDouble(function));
                     } catch (Exception ex) {
+                        System.out.println( base1 + " " + power1);
                         System.out.println(math);
-                        System.out.println(function);
-                        System.exit(0);
+                        System.out.println(function + " " + function.substring((int) base, (int) power-1));
+                        System.exit(104);
                     }
 
 
@@ -252,7 +257,7 @@ class Derivative {
         } catch (ScriptException e) {
             System.out.println("Function not valid please ensure equation is correct " +
                     "\n Ex: 2-(-x) != 2--x ; 2x^3+3/4 != ((2x^3)+3)/4" + " " + function1);
-            System.exit(0);
+            System.exit(105);
         }
         //System.out.println(df.format(Double.parseDouble(result.toString())) + " HERE");
         return result.toString();
@@ -263,13 +268,15 @@ class Derivative {
         ScriptEngineManager evalFunction = new ScriptEngineManager();
         ScriptEngine evaluate = evalFunction.getEngineByName("js");
         Object result = null;
+        function = function.replace("(","").replace(")","");
+        //System.out.println(function + "FUNCTION");
         try {
             result = evaluate.eval(function);
         } catch (ScriptException e) {
             System.out.println("Error within code ignore the following ");
             e.printStackTrace();
             System.out.println(function);
-            System.exit(0);
+            System.exit(106);
 
         }
         assert result != null : "result of Eval is null";
