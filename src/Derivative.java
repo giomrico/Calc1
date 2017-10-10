@@ -13,6 +13,7 @@ class Derivative {
      * values (start-stop) displays x, f(x) , f'(x)
      *
      * @param args User input arguments
+     * @author Giovanni Rico
      */
     public static void main(String[] args) throws ScriptException {
         Scanner in = new Scanner(System.in);
